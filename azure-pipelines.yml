@@ -32,7 +32,7 @@ stages:
         command: 'init'
         workingDirectory: '$(workDir)'
         backendServiceArm: 'nitinsubscription'
-        backendAzureRmStorageAccountName: 'websitestorage111'
+        backendAzureRmStorageAccountName: 'websitestorage1111'
         backendAzureRmContainerName: 'websitecon'
         backendAzureRmKey: 'terraform.tfstate'
     - task: TerraformTask@5
@@ -80,7 +80,7 @@ stages:
         command: 'init'
         workingDirectory: '$(workDir)'
         backendServiceArm: 'nitinsubscription'
-        backendAzureRmStorageAccountName: 'websitestorage111'
+        backendAzureRmStorageAccountName: 'websitestorage1111'
         backendAzureRmContainerName: 'websitecon'
         backendAzureRmKey: 'terraform.tfstate'
     - task: TerraformTask@5
