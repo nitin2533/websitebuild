@@ -9,7 +9,7 @@ pr:
     include:
       - main
 pool:
-  name: Desktop   # make sure this is a valid agent pool in your DevOps org
+  name: default   # make sure this is a valid agent pool in your DevOps org
 variables:
   workDir: '$(System.DefaultWorkingDirectory)/'
 stages:
@@ -55,7 +55,7 @@ stages:
     steps:
     - task: ManualValidation@1
       inputs:
-        notifyUsers: 'nitinchaudhary2425@gmail.com'
+        notifyUsers: 'nitinkumar@zohomail.in'
         instructions: 'Please review the Terraform plan output and approve to proceed with Apply stage.'
         onTimeout: 'reject'
         timeout: 43200 # 12 hours
