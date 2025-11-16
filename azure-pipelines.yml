@@ -11,7 +11,7 @@ pr:
 pool:
   name: default   # make sure this is a valid agent pool in your DevOps org
 variables:
-  workDir: '$(System.DefaultWorkingDirectory)/todo-infra'
+  workDir: '$(System.DefaultWorkingDirectory)/'
 stages:
 - stage: Destroy
   displayName: "Terraform Destroy Stage"
