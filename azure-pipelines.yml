@@ -1,40 +1,70 @@
+# ==========================================
+# Terraform DESTROY Pipeline
+# ==========================================
 
-trigger:
-  branches:
-    include:
-      - feature/*
-      - main
-pr:
-  branches:
-    include:
-      - main
+trigger: none   # Destroy must NEVER run automatically
+pr: none        # Protect from PR execution
+
 pool:
-  name: default   # make sure this is a valid agent pool in your DevOps org
+  name: default
+
 variables:
   workDir: '$(System.DefaultWorkingDirectory)/'
+
 stages:
-- stage: Destroy
-  displayName: "Terraform Destroy Stage"
+# -----------------------
+# Stage 1: MANUAL APPROVAL
+# -----------------------
+- stage: Approval_Before_Destroy
+  displayName: "Approval Before Terraform Destroy"
   jobs:
-  - job: TerraformDestroy
-    displayName: "Terraform Destroy Job"
+  - job: ManualApproval
+    displayName: "Require Manual Approval"
+    pool: server
     steps:
+    - task: ManualValidation@1
+      inputs:
+        notifyUsers: |
+          nitinkumar@zohomail.in
+        instructions: |
+          WARNING: This will permanently destroy all Terraform-managed resources.
+          Review the request carefully and approve only if you are certain.
+        onTimeout: 'reject'
+        timeout: 43200 # 12 hours
+
+# -----------------------
+# Stage 2: DESTROY
+# -----------------------
+- stage: Terraform_Destroy
+  displayName: "Terraform Destroy Stage"
+  dependsOn: Approval_Before_Destroy
+  condition: succeeded()
+
+  jobs:
+  - job: DestroyJob
+    displayName: "Terraform Destroy Job"
+
+    steps:
+    - task: TerraformInstaller@1
+      inputs:
+        terraformVersion: 'latest'
+
     - task: TerraformTask@5
       displayName: 'Terraform Init'
       inputs:
         provider: 'azurerm'
         command: 'init'
         workingDirectory: '$(workDir)'
+        backendServiceArm: 'nitinsubscription'
         backendAzureRmStorageAccountName: 'websitestorage1111'
         backendAzureRmContainerName: 'websitecon'
         backendAzureRmKey: 'terraform.tfstate'
-        backendServiceArm: 'nitinsubscription'
+
     - task: TerraformTask@5
       displayName: 'Terraform Destroy'
       inputs:
         provider: 'azurerm'
         command: 'destroy'
         workingDirectory: '$(workDir)'
-        backendAzureRmStorageAccountName: 'websitestorage1111'
         environmentServiceNameAzureRM: 'nitinsubscription'
         commandOptions: '-auto-approve'
